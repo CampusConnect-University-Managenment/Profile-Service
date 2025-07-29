@@ -1,6 +1,7 @@
 package com.example.profileservice.enumeration;
 
-public enum Response {
+public enum ResponseStatus {
     SUCCESS,
-    FAILED
+    FAILED,
+    NOT_FOUND
 }
