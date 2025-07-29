@@ -1,7 +1,7 @@
 package com.example.profileservice.controller;
 
 import com.example.profileservice.entity.AdminProfile;
-import com.example.profileservice.service.AdminProfileService;
+import com.example.profileservice.service.impl.AdminProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
