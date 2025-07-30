@@ -21,6 +21,4 @@ public class StudentEntity {
     private String studentEmail;
     private String studentPhoneNo;
     private String studentAddress;
-
-
 }

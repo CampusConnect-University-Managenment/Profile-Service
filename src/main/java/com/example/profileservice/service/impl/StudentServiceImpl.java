@@ -35,6 +35,15 @@ public class StudentServiceImpl implements StudentService {
         return request.get();
     }
     @Override
+    public List<StudentEntity> saveAllStudents(List<StudentEntity> students) {
+        // Make sure studentId is null so MongoDB will auto-generate
+        for (StudentEntity student : students) {
+            student.setStudentId(null);
+        }
+        return studentRepository.saveAll(students);
+    }
+
+    @Override
     public Optional<StudentEntity> findById(String studentId){
         Optional<StudentEntity>  request = studentRepository.findById(studentId);
         if(request.isEmpty()){

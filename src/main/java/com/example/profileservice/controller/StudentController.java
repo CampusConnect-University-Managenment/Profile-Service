@@ -4,7 +4,6 @@ import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,12 +57,13 @@ public class StudentController {
             return ResponseEntity.status(404).body(commonResponse);
         }
     }
+
     @GetMapping("/id/{studentId}")
     public ResponseEntity<CommonResponse> findById(@PathVariable String studentId){
         CommonResponse commonResponse = new CommonResponse();
         Optional<StudentEntity> getstudentbyId = studentService.findById(studentId);
 
-        if (!getstudentbyId.isEmpty()) {
+        if (getstudentbyId.isPresent()) {
             commonResponse.setData(getstudentbyId.get());
             commonResponse.setMessage("Student displayed Successfully");
             commonResponse.setStatusCode(200);
@@ -97,7 +97,6 @@ public class StudentController {
             return ResponseEntity.status(404).body(commonResponse);
         }
     }
-
 
     @PutMapping("/{studentId}")
     public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentId, @RequestBody StudentEntity updateStudent) {
