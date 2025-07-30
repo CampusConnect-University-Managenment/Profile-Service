@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/students")
@@ -57,8 +58,27 @@ public class StudentController {
             return ResponseEntity.status(404).body(commonResponse);
         }
     }
+    @GetMapping("/id/{studentId}")
+    public ResponseEntity<CommonResponse> GetStudentById(@PathVariable String studentId){
+        CommonResponse commonResponse = new CommonResponse();
+        Optional<StudentEntity> getstudentbyId = studentService.GetStudentById(studentId);
 
-    @GetMapping("/{studentDepartment}")
+        if (!getstudentbyId.isEmpty()) {
+            commonResponse.setData(getstudentbyId.get());
+            commonResponse.setMessage("Student displayed Successfully");
+            commonResponse.setStatusCode(200);
+            commonResponse.setStatus(ResponseStatus.SUCCESS);
+            return ResponseEntity.status(200).body(commonResponse);
+        } else {
+            commonResponse.setStatusCode(404);
+            commonResponse.setMessage("No student found with this Id: " + studentId);
+            commonResponse.setData(null);
+            commonResponse.setStatus(ResponseStatus.FAILED);
+            return ResponseEntity.status(404).body(commonResponse);
+        }
+    }
+
+    @GetMapping("/department/{studentDepartment}")
     public ResponseEntity<CommonResponse> GetStudentByDepartment(@PathVariable String studentDepartment) {
         CommonResponse commonResponse = new CommonResponse();
         List<StudentEntity> getStudents = studentService.GetStudentByDepartment(studentDepartment);
@@ -77,6 +97,7 @@ public class StudentController {
             return ResponseEntity.status(404).body(commonResponse);
         }
     }
+
 
     @PutMapping("/{studentId}")
     public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentId, @RequestBody StudentEntity updateStudent) {
