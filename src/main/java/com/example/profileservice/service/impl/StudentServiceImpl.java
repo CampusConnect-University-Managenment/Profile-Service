@@ -45,7 +45,6 @@ public class StudentServiceImpl implements StudentService {
     }
     @Override
     public List<StudentEntity> saveAllStudents(List<StudentEntity> students) {
-        // Make sure studentId is null so MongoDB will auto-generate
         for (StudentEntity student : students) {
             student.setStudentId(null);
         }
@@ -68,15 +67,9 @@ public class StudentServiceImpl implements StudentService {
             throw new StudentNotFoundException("Student not found with this Id: " + studentId);
         } else {
             StudentEntity existingStudent = req.get();
-
-            // Logging IDs before and after copying for debugging
             System.out.println("Before copy, existing ID: " + existingStudent.getStudentId());
-
-            // Use correct field name "studentId" with exact case
             BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "createdDate");
-
             System.out.println("After copy, existing ID: " + existingStudent.getStudentId());
-
             return studentRepository.save(existingStudent);
         }
     }
