@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.exception.StudentNotFoundException;
 import com.example.profileservice.repository.StudentRepository;
+import com.example.profileservice.repository.StudentSummary;
 import com.example.profileservice.service.StudentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,14 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentEntity> GetallStudents() {
         return studentRepository.findAll();
     }
+        @Override
+        public Optional<StudentSummary> findByStudentRollNo(String studentRollNo) {
+            Optional<StudentSummary> request = studentRepository.findByStudentRollNo(studentRollNo);
+            if (request.isEmpty()) {
+                throw new StudentNotFoundException("Student not found with RollNo: " + studentRollNo);
+            }
+            return request;
+        }
 
     @Override
     public List<StudentEntity> GetStudentByDepartment(String studentDepartment) {
