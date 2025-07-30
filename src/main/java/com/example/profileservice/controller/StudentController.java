@@ -4,12 +4,12 @@ import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -59,7 +59,27 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/{studentDepartment}")
+    @GetMapping("/id/{studentId}")
+    public ResponseEntity<CommonResponse> findById(@PathVariable String studentId){
+        CommonResponse commonResponse = new CommonResponse();
+        Optional<StudentEntity> getstudentbyId = studentService.findById(studentId);
+
+        if (getstudentbyId.isPresent()) {
+            commonResponse.setData(getstudentbyId.get());
+            commonResponse.setMessage("Student displayed Successfully");
+            commonResponse.setStatusCode(200);
+            commonResponse.setStatus(ResponseStatus.SUCCESS);
+            return ResponseEntity.status(200).body(commonResponse);
+        } else {
+            commonResponse.setStatusCode(404);
+            commonResponse.setMessage("No student found with this Id: " + studentId);
+            commonResponse.setData(null);
+            commonResponse.setStatus(ResponseStatus.FAILED);
+            return ResponseEntity.status(404).body(commonResponse);
+        }
+    }
+
+    @GetMapping("/department/{studentDepartment}")
     public ResponseEntity<CommonResponse> GetStudentByDepartment(@PathVariable String studentDepartment) {
         CommonResponse commonResponse = new CommonResponse();
         List<StudentEntity> getStudents = studentService.GetStudentByDepartment(studentDepartment);
