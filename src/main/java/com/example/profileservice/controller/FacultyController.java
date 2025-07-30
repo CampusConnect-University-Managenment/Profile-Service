@@ -29,10 +29,14 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getFacultyById(facultyCode));
     }
 
-
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<FacultyDTO>> getAllFaculty() {
         return ResponseEntity.ok(facultyService.getAllFaculty());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getFacultyCount() {
+        return ResponseEntity.ok(facultyService.getFacultyCount());
     }
 
     @PutMapping("/{facultyCode}")
