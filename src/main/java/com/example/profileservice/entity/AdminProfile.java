@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Document(collection = "admin_profiles")
+@Document(collection = "admin_db")
 public class AdminProfile {
 
     @Id

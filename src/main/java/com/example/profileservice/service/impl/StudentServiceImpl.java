@@ -35,7 +35,7 @@ public class StudentServiceImpl implements StudentService {
         return request.get();
     }
     @Override
-    public Optional<StudentEntity> GetStudentById(String studentId){
+    public Optional<StudentEntity> findById(String studentId){
         Optional<StudentEntity>  request = studentRepository.findById(studentId);
         if(request.isEmpty()){
             throw new StudentNotFoundException("Student Not Found in this Id:"+studentId);

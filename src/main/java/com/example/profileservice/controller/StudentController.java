@@ -59,9 +59,9 @@ public class StudentController {
         }
     }
     @GetMapping("/id/{studentId}")
-    public ResponseEntity<CommonResponse> GetStudentById(@PathVariable String studentId){
+    public ResponseEntity<CommonResponse> findById(@PathVariable String studentId){
         CommonResponse commonResponse = new CommonResponse();
-        Optional<StudentEntity> getstudentbyId = studentService.GetStudentById(studentId);
+        Optional<StudentEntity> getstudentbyId = studentService.findById(studentId);
 
         if (!getstudentbyId.isEmpty()) {
             commonResponse.setData(getstudentbyId.get());

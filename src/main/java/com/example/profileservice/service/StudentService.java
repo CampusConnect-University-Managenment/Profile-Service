@@ -9,7 +9,7 @@ public interface StudentService {
     List<StudentEntity> GetallStudents();
     StudentEntity AddStudents(StudentEntity studentEntity);
     List<StudentEntity> GetStudentByDepartment(String studentDepartment);
-    Optional<StudentEntity> GetStudentById(String studentId);
+    Optional<StudentEntity> findById(String studentId);
     StudentEntity DeleteById(String studentId);
     StudentEntity UpdateStudent(String studentId, StudentEntity updateStudent);
 }
