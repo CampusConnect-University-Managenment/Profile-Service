@@ -30,9 +30,17 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentEntity> GetStudentByDepartment(String studentDepartment) {
         Optional<List<StudentEntity>> request = studentRepository.findByStudentDepartment(studentDepartment);
         if (request.isEmpty()) {
-            throw new StudentNotFoundException("Student Not Found in this Department: " + studentDepartment);
+            throw new StudentNotFoundException("Students Not Found in this Department: " + studentDepartment);
         }
         return request.get();
+    }
+    @Override
+    public Optional<StudentEntity> findById(String studentId){
+        Optional<StudentEntity>  request = studentRepository.findById(studentId);
+        if(request.isEmpty()){
+            throw new StudentNotFoundException("Student Not Found in this Id:"+studentId);
+        }
+        return request;
     }
 
     @Override
