@@ -6,6 +6,7 @@ import com.example.profileservice.repository.StudentSummary;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface StudentService {
     List<StudentEntity> saveAllStudents(List<StudentEntity> students);
     List<StudentEntity> GetallStudents();
@@ -15,6 +16,4 @@ public interface StudentService {
     Optional<StudentEntity> findById(String studentId);
     StudentEntity DeleteById(String studentId);
     StudentEntity UpdateStudent(String studentId, StudentEntity updateStudent);
-
-
 }

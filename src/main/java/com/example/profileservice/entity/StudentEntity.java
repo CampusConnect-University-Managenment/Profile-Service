@@ -13,12 +13,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class StudentEntity {
     @Id
     private String studentId;
-    private String studentName;
+
+    private String studentFirstname;
+    private String studentLastname;
     private String studentRollNo;
     private String studentDepartment;
-    private String studentYear;
-    private String studentSection;
-    private String studentEmail;
+    private String studentDob;
     private String studentPhoneNo;
+    private String studentEmail;
+    private String studentAadharno;
+    private float studentTenthmark;
+    private float studentDiplomamark;
+    private float studentTwelfthmark;
+    private String studentYear;
+    private String studentSem;
+    private String studentModeofjoing;
+    private String studentGender;
+    private String studentBloodgroup;
     private String studentAddress;
+    private String studentParentrole;
+    private String studentParentname;
+    private String studentParentphone;
+
+    private String studentSection;
 }
