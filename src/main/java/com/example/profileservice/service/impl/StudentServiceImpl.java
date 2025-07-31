@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.exception.StudentNotFoundException;
 import com.example.profileservice.repository.StudentRepository;
+import com.example.profileservice.repository.StudentSummary;
 import com.example.profileservice.service.StudentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,17 @@ public class StudentServiceImpl implements StudentService {
     public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
-
     @Override
     public List<StudentEntity> GetallStudents() {
         return studentRepository.findAll();
+    }
+    @Override
+    public Optional<StudentEntity> findByStudentRollNo(String studentRollNo) {
+        Optional<StudentEntity> request = studentRepository.findByStudentRollNo(studentRollNo);
+        if (request.isEmpty()) {
+            throw new StudentNotFoundException("Student not found with RollNo: " + studentRollNo);
+        }
+        return request;
     }
 
     @Override
@@ -36,7 +44,6 @@ public class StudentServiceImpl implements StudentService {
     }
     @Override
     public List<StudentEntity> saveAllStudents(List<StudentEntity> students) {
-        // Make sure studentId is null so MongoDB will auto-generate
         for (StudentEntity student : students) {
             student.setStudentId(null);
         }
@@ -44,37 +51,39 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Optional<StudentEntity> findById(String studentId){
-        Optional<StudentEntity>  request = studentRepository.findById(studentId);
-        if(request.isEmpty()){
-            throw new StudentNotFoundException("Student Not Found in this Id:"+studentId);
-        }
-        return request;
-    }
+    public StudentEntity UpdateStudent(String studentRollNo, StudentEntity updateStudent) {
+        Optional<StudentEntity> req = studentRepository.findByStudentRollNo(studentRollNo);
 
-    @Override
-    public StudentEntity UpdateStudent(String studentId, StudentEntity updateStudent) {
-        Optional<StudentEntity> req = studentRepository.findById(studentId);
         if (req.isEmpty()) {
-            throw new StudentNotFoundException("Student not found with this Id: " + studentId);
-        } else {
-            StudentEntity existingStudent = req.get();
-
-            // Logging IDs before and after copying for debugging
-            System.out.println("Before copy, existing ID: " + existingStudent.getStudentId());
-
-            // Use correct field name "studentId" with exact case
-            BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "createdDate");
-
-            System.out.println("After copy, existing ID: " + existingStudent.getStudentId());
-
-            return studentRepository.save(existingStudent);
+            throw new StudentNotFoundException("Student not found with Roll No: " + studentRollNo);
         }
+        StudentEntity existingStudent = req.get();
+        BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "studentRollNo");
+        System.out.println("Updated student: " + existingStudent.getStudentFirstname() + " " + existingStudent.getStudentLastname());
+        return studentRepository.save(existingStudent);
     }
 
     @Override
-    public StudentEntity AddStudents(StudentEntity studentEntity) {
-        return studentRepository.save(studentEntity);
+    public StudentEntity AddStudents(StudentEntity student) {
+
+        String department = student.getStudentDepartment().toUpperCase();
+
+        Optional<StudentEntity> lastStudentOpt =
+                studentRepository.findTopByStudentDepartmentOrderByStudentRollNoDesc(department);
+
+        int nextNumber = 1;
+        if (lastStudentOpt.isPresent()) {
+            String lastRollNo = lastStudentOpt.get().getStudentRollNo();
+            String numberPart = lastRollNo.replaceAll("\\D+", ""); // Extract digits
+            if (!numberPart.isEmpty()) {
+                nextNumber = Integer.parseInt(numberPart) + 1;
+            }
+        }
+
+        String newRollNo = department + String.format("%03d", nextNumber); // e.g., IT007
+        student.setStudentRollNo(newRollNo);
+
+        return studentRepository.save(student);
     }
 
     @Override

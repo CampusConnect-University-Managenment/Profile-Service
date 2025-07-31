@@ -29,10 +29,24 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getFacultyById(facultyCode));
     }
 
+    @GetMapping("/department/{department}")
+    public ResponseEntity<List<FacultyDTO>> getFacultyByDepartment(@PathVariable String department) {
+        return ResponseEntity.ok(facultyService.getFacultyByDepartment(department));
+    }
+
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<FacultyDTO>> getFacultyByRole(@PathVariable String role) {
+        return ResponseEntity.ok(facultyService.getFacultyByRole(role));
+    }
 
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<FacultyDTO>> getAllFaculty() {
         return ResponseEntity.ok(facultyService.getAllFaculty());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getFacultyCount() {
+        return ResponseEntity.ok(facultyService.getFacultyCount());
     }
 
     @PutMapping("/{facultyCode}")

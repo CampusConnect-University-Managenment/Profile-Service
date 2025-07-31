@@ -1,10 +1,12 @@
 package com.example.profileservice.controller;
 
 import com.example.profileservice.entity.StudentEntity;
+import com.example.profileservice.repository.StudentSummary;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,25 +61,26 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/id/{studentId}")
-    public ResponseEntity<CommonResponse> findById(@PathVariable String studentId){
+    @GetMapping("/rollno/{studentRollNo}")
+    public ResponseEntity<CommonResponse> findByStudentRollNo(@PathVariable String studentRollNo) {
         CommonResponse commonResponse = new CommonResponse();
-        Optional<StudentEntity> getstudentbyId = studentService.findById(studentId);
+        Optional<StudentEntity> studentOpt = studentService.findByStudentRollNo(studentRollNo);
 
-        if (getstudentbyId.isPresent()) {
-            commonResponse.setData(getstudentbyId.get());
-            commonResponse.setMessage("Student displayed Successfully");
+        if (studentOpt.isPresent()) {
+            commonResponse.setData(studentOpt.get());
+            commonResponse.setMessage("Student by RollNo displayed successfully");
             commonResponse.setStatusCode(200);
             commonResponse.setStatus(ResponseStatus.SUCCESS);
-            return ResponseEntity.status(200).body(commonResponse);
+            return ResponseEntity.ok(commonResponse);
         } else {
             commonResponse.setStatusCode(404);
-            commonResponse.setMessage("No student found with this Id: " + studentId);
+            commonResponse.setMessage("No student found for RollNo: " + studentRollNo);
             commonResponse.setData(null);
             commonResponse.setStatus(ResponseStatus.FAILED);
-            return ResponseEntity.status(404).body(commonResponse);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(commonResponse);
         }
     }
+
 
     @GetMapping("/department/{studentDepartment}")
     public ResponseEntity<CommonResponse> GetStudentByDepartment(@PathVariable String studentDepartment) {
@@ -99,10 +102,10 @@ public class StudentController {
         }
     }
 
-    @PutMapping("/{studentId}")
-    public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentId, @RequestBody StudentEntity updateStudent) {
+    @PutMapping("/rollno/{studentRollNo}")
+    public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentRollNo, @RequestBody StudentEntity updateStudent) {
         CommonResponse commonResponse = new CommonResponse();
-        StudentEntity updated = studentService.UpdateStudent(studentId, updateStudent);
+        StudentEntity updated = studentService.UpdateStudent(studentRollNo, updateStudent);
 
         if (updated != null) {
             commonResponse.setData(updated);
@@ -118,6 +121,7 @@ public class StudentController {
             return ResponseEntity.status(400).body(commonResponse);
         }
     }
+
 
     @DeleteMapping("/{studentId}")
     public ResponseEntity<CommonResponse> DeleteById(@PathVariable String studentId) {
