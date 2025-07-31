@@ -14,4 +14,6 @@ public interface FacultyService {
     void partialUpdateFaculty(String id, Map<String, Object> updates);
     void bulkUploadFaculty(MultipartFile file);
     void deleteFaculty(String id);
+    List<FacultyDTO> getFacultyByDepartment(String department);
+    List<FacultyDTO> getFacultyByRole(String role);
 }
