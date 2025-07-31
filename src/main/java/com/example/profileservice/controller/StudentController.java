@@ -60,29 +60,10 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/id/{studentId}")
-    public ResponseEntity<CommonResponse> findById(@PathVariable String studentId){
-        CommonResponse commonResponse = new CommonResponse();
-        Optional<StudentEntity> getstudentbyId = studentService.findById(studentId);
-
-        if (getstudentbyId.isPresent()) {
-            commonResponse.setData(getstudentbyId.get());
-            commonResponse.setMessage("Student displayed Successfully");
-            commonResponse.setStatusCode(200);
-            commonResponse.setStatus(ResponseStatus.SUCCESS);
-            return ResponseEntity.status(200).body(commonResponse);
-        } else {
-            commonResponse.setStatusCode(404);
-            commonResponse.setMessage("No student found with this Id: " + studentId);
-            commonResponse.setData(null);
-            commonResponse.setStatus(ResponseStatus.FAILED);
-            return ResponseEntity.status(404).body(commonResponse);
-        }
-    }
     @GetMapping("/rollno/{studentRollNo}")
     public ResponseEntity<CommonResponse> findByStudentRollNo(@PathVariable String studentRollNo) {
         CommonResponse commonResponse = new CommonResponse();
-        Optional<StudentSummary> studentOpt = studentService.findByStudentRollNo(studentRollNo);
+        Optional<StudentEntity> studentOpt = studentService.findByStudentRollNo(studentRollNo);
 
         if (studentOpt.isPresent()) {
             commonResponse.setData(studentOpt.get());
@@ -120,10 +101,10 @@ public class StudentController {
         }
     }
 
-    @PutMapping("/{studentId}")
-    public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentId, @RequestBody StudentEntity updateStudent) {
+    @PutMapping("/rollno/{studentRollNo}")
+    public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentRollNo, @RequestBody StudentEntity updateStudent) {
         CommonResponse commonResponse = new CommonResponse();
-        StudentEntity updated = studentService.UpdateStudent(studentId, updateStudent);
+        StudentEntity updated = studentService.UpdateStudent(studentRollNo, updateStudent);
 
         if (updated != null) {
             commonResponse.setData(updated);
@@ -139,6 +120,7 @@ public class StudentController {
             return ResponseEntity.status(400).body(commonResponse);
         }
     }
+
 
     @DeleteMapping("/{studentId}")
     public ResponseEntity<CommonResponse> DeleteById(@PathVariable String studentId) {
