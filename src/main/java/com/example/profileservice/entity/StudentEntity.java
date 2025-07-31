@@ -31,9 +31,16 @@ public class StudentEntity {
     private String studentGender;
     private String studentBloodgroup;
     private String studentAddress;
-    private String studentParentrole;
-    private String studentParentname;
-    private String studentParentphone;
-
+    private String studentParentorguardian;
+    private String studentParentorguardianname;
+    private String studentParentorguardianphone;
     private String studentSection;
+
+    private int studentCredits;
+    private float studentAttendance;
+    private float studentCgpa;
+    private String studentProfilepic;
+
+
+
 }

@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends MongoRepository<StudentEntity,String> {
     Optional<List<StudentEntity>> findByStudentDepartment(String studentDepartment);
-    Optional<StudentSummary> findByStudentRollNo(String studentRollNo);
-    Optional<StudentEntity> findById(String studentId);
+    Optional<StudentEntity> findByStudentRollNo(String studentRollNo);
+    Optional<StudentEntity> findTopByStudentDepartmentOrderByStudentRollNoDesc(String studentDepartment);
 }

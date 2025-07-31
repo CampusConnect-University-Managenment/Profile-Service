@@ -21,19 +21,18 @@ public class StudentServiceImpl implements StudentService {
     public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
-
     @Override
     public List<StudentEntity> GetallStudents() {
         return studentRepository.findAll();
     }
-        @Override
-        public Optional<StudentSummary> findByStudentRollNo(String studentRollNo) {
-            Optional<StudentSummary> request = studentRepository.findByStudentRollNo(studentRollNo);
-            if (request.isEmpty()) {
-                throw new StudentNotFoundException("Student not found with RollNo: " + studentRollNo);
-            }
-            return request;
+    @Override
+    public Optional<StudentEntity> findByStudentRollNo(String studentRollNo) {
+        Optional<StudentEntity> request = studentRepository.findByStudentRollNo(studentRollNo);
+        if (request.isEmpty()) {
+            throw new StudentNotFoundException("Student not found with RollNo: " + studentRollNo);
         }
+        return request;
+    }
 
     @Override
     public List<StudentEntity> GetStudentByDepartment(String studentDepartment) {
@@ -52,31 +51,39 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Optional<StudentEntity> findById(String studentId){
-        Optional<StudentEntity>  request = studentRepository.findById(studentId);
-        if(request.isEmpty()){
-            throw new StudentNotFoundException("Student Not Found in this Id:"+studentId);
-        }
-        return request;
-    }
+    public StudentEntity UpdateStudent(String studentRollNo, StudentEntity updateStudent) {
+        Optional<StudentEntity> req = studentRepository.findByStudentRollNo(studentRollNo);
 
-    @Override
-    public StudentEntity UpdateStudent(String studentId, StudentEntity updateStudent) {
-        Optional<StudentEntity> req = studentRepository.findById(studentId);
         if (req.isEmpty()) {
-            throw new StudentNotFoundException("Student not found with this Id: " + studentId);
-        } else {
-            StudentEntity existingStudent = req.get();
-            System.out.println("Before copy, existing ID: " + existingStudent.getStudentId());
-            BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "createdDate");
-            System.out.println("After copy, existing ID: " + existingStudent.getStudentId());
-            return studentRepository.save(existingStudent);
+            throw new StudentNotFoundException("Student not found with Roll No: " + studentRollNo);
         }
+        StudentEntity existingStudent = req.get();
+        BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "studentRollNo");
+        System.out.println("Updated student: " + existingStudent.getStudentFirstname() + " " + existingStudent.getStudentLastname());
+        return studentRepository.save(existingStudent);
     }
 
     @Override
-    public StudentEntity AddStudents(StudentEntity studentEntity) {
-        return studentRepository.save(studentEntity);
+    public StudentEntity AddStudents(StudentEntity student) {
+
+        String department = student.getStudentDepartment().toUpperCase();
+
+        Optional<StudentEntity> lastStudentOpt =
+                studentRepository.findTopByStudentDepartmentOrderByStudentRollNoDesc(department);
+
+        int nextNumber = 1;
+        if (lastStudentOpt.isPresent()) {
+            String lastRollNo = lastStudentOpt.get().getStudentRollNo();
+            String numberPart = lastRollNo.replaceAll("\\D+", ""); // Extract digits
+            if (!numberPart.isEmpty()) {
+                nextNumber = Integer.parseInt(numberPart) + 1;
+            }
+        }
+
+        String newRollNo = department + String.format("%03d", nextNumber); // e.g., IT007
+        student.setStudentRollNo(newRollNo);
+
+        return studentRepository.save(student);
     }
 
     @Override

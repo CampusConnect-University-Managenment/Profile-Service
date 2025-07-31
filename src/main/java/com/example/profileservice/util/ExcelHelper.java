@@ -30,32 +30,40 @@ public class ExcelHelper {
 
                 StudentEntity student = new StudentEntity();
 
-                student.setStudentFirstname(getCellValue(currentRow.getCell(0)));
-                student.setStudentLastname(getCellValue(currentRow.getCell(1)));
-                student.setStudentRollNo(getCellValue(currentRow.getCell(2)));
-                student.setStudentDepartment(getCellValue(currentRow.getCell(3)));
-                student.setStudentDob(getCellValue(currentRow.getCell(4)));
-                student.setStudentPhoneNo(getCellValue(currentRow.getCell(5)));
-                student.setStudentEmail(getCellValue(currentRow.getCell(6)));
-                student.setStudentAadharno(getCellValue(currentRow.getCell(7)));
+                try {
+                    student.setStudentFirstname(getCellValue(currentRow.getCell(0)));
+                    student.setStudentLastname(getCellValue(currentRow.getCell(1)));
+                    student.setStudentRollNo(getCellValue(currentRow.getCell(2)));
+                    student.setStudentDepartment(getCellValue(currentRow.getCell(3)));
+                    student.setStudentDob(getCellValue(currentRow.getCell(4)));
+                    student.setStudentPhoneNo(getCellValue(currentRow.getCell(5)));
+                    student.setStudentEmail(getCellValue(currentRow.getCell(6)));
+                    student.setStudentAadharno(getCellValue(currentRow.getCell(7)));
 
-            // Parsing float values
-                student.setStudentTenthmark(Float.parseFloat(getCellValue(currentRow.getCell(8))));
-                student.setStudentDiplomamark(Float.parseFloat(getCellValue(currentRow.getCell(9))));
-                student.setStudentTwelfthmark(Float.parseFloat(getCellValue(currentRow.getCell(10))));
+                    student.setStudentTenthmark(parseFloatSafely(currentRow.getCell(8)));
+                    student.setStudentDiplomamark(parseFloatSafely(currentRow.getCell(9)));
+                    student.setStudentTwelfthmark(parseFloatSafely(currentRow.getCell(10)));
 
-                student.setStudentYear(getCellValue(currentRow.getCell(11)));
-                student.setStudentSem(getCellValue(currentRow.getCell(12)));
-                student.setStudentModeofjoing(getCellValue(currentRow.getCell(13)));
-                student.setStudentGender(getCellValue(currentRow.getCell(14)));
-                student.setStudentBloodgroup(getCellValue(currentRow.getCell(15)));
-                student.setStudentAddress(getCellValue(currentRow.getCell(16)));
-                student.setStudentParentrole(getCellValue(currentRow.getCell(17)));
-                student.setStudentParentname(getCellValue(currentRow.getCell(18)));
-                student.setStudentParentphone(getCellValue(currentRow.getCell(19)));
-                student.setStudentSection(getCellValue(currentRow.getCell(20)));
+                    student.setStudentYear(getCellValue(currentRow.getCell(11)));
+                    student.setStudentSem(getCellValue(currentRow.getCell(12)));
+                    student.setStudentModeofjoing(getCellValue(currentRow.getCell(13)));
+                    student.setStudentGender(getCellValue(currentRow.getCell(14)));
+                    student.setStudentBloodgroup(getCellValue(currentRow.getCell(15)));
+                    student.setStudentAddress(getCellValue(currentRow.getCell(16)));
+                    student.setStudentParentorguardian(getCellValue(currentRow.getCell(17)));
+                    student.setStudentParentorguardianname(getCellValue(currentRow.getCell(18)));
+                    student.setStudentParentorguardianphone(getCellValue(currentRow.getCell(19)));
+                    student.setStudentSection(getCellValue(currentRow.getCell(20)));
+                    student.setStudentCredits(parseIntSafely(currentRow.getCell(21)));
+                    student.setStudentAttendance(parseFloatSafely(currentRow.getCell(22)));
+                    student.setStudentCgpa(parseFloatSafely(currentRow.getCell(23)));
+                    student.setStudentProfilepic(getCellValue(currentRow.getCell(24)));
 
-                studentList.add(student);
+                    studentList.add(student);
+                } catch (Exception e) {
+                    // Log and skip the row
+                    System.err.println("Skipping row due to error: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse Excel file: " + e.getMessage());
@@ -83,4 +91,19 @@ public class ExcelHelper {
         }
     }
 
+    private static float parseFloatSafely(Cell cell) {
+        try {
+            return Float.parseFloat(getCellValue(cell));
+        } catch (Exception e) {
+            return 0f;
+        }
+    }
+
+    private static int parseIntSafely(Cell cell) {
+        try {
+            return Integer.parseInt(getCellValue(cell));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }
