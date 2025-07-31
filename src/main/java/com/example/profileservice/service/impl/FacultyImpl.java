@@ -8,28 +8,23 @@ import com.example.profileservice.service.FacultyService;
 import com.example.profileservice.service.SequenceGeneratorService;
 import com.mongodb.client.result.UpdateResult;
 import lombok.Data;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.poi.ss.usermodel.*;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Service
 public class FacultyImpl implements FacultyService {
 
@@ -41,7 +36,6 @@ public class FacultyImpl implements FacultyService {
 
     @Autowired
     private SequenceGeneratorService sequenceGeneratorService;
-
 
     private FacultyDTO convertToDTO(Faculty faculty) {
         FacultyDTO dto = new FacultyDTO();
@@ -84,8 +78,24 @@ public class FacultyImpl implements FacultyService {
     public FacultyDTO updateFaculty(String facultyCode, FacultyDTO dto) {
         Faculty faculty = facultyRepository.findByFacultyCode(facultyCode)
                 .orElseThrow(() -> new FacultyNotFoundException("Faculty not found with code: " + facultyCode));
-        // update fields...
+        // Update fields if needed using setters
         return convertToDTO(facultyRepository.save(faculty));
+    }
+
+    @Override
+    public List<FacultyDTO> getFacultyByDepartment(String department) {
+        List<Faculty> facultyList = facultyRepository.findByDepartment(department);
+        return facultyList.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Override
+    public List<FacultyDTO> getFacultyByRole(String role) {
+        List<Faculty> facultyList = facultyRepository.findByRole(role);
+        return facultyList.stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @Override
@@ -133,25 +143,27 @@ public class FacultyImpl implements FacultyService {
                 // ✅ DOB & joiningDate: parse if not empty
                 String dobStr = formatter.formatCellValue(row.getCell(6));
                 if (!dobStr.isEmpty()) {
-                    DateTimeFormatter formater = DateTimeFormatter.ofPattern("M/d/yy"); // or "MM/dd/yyyy" as needed
-                    faculty.setDob(LocalDate.parse(dobStr, formater)); // only if Excel stores ISO (yyyy-MM-dd)
+                    DateTimeFormatter formater = DateTimeFormatter.ofPattern("M/d/yy");
+                    faculty.setDob(LocalDate.parse(dobStr, formater));
                 }
 
                 faculty.setBloodGroup(formatter.formatCellValue(row.getCell(7)));
 
-                // ✅ Experience is numeric
                 String expStr = formatter.formatCellValue(row.getCell(8));
                 faculty.setExperience(expStr.isEmpty() ? 0 : Integer.parseInt(expStr));
 
                 String joiningDateStr = formatter.formatCellValue(row.getCell(9));
                 if (!joiningDateStr.isEmpty()) {
                     DateTimeFormatter formater = DateTimeFormatter.ofPattern("M/d/yy");
-                    faculty.setJoiningDate(LocalDate.parse(joiningDateStr,formater));
+                    faculty.setJoiningDate(LocalDate.parse(joiningDateStr, formater));
                 }
 
-                faculty.setEducationQualification(formatter.formatCellValue(row.getCell(10)));
+                // ✅ Fixed here: use setDegree not setEducationQualification
+                faculty.setDegree(formatter.formatCellValue(row.getCell(10)));
+
                 faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
+
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
                 faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
 
