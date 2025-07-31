@@ -16,4 +16,5 @@ public interface FacultyService {
     void deleteFaculty(String id);
     List<FacultyDTO> getFacultyByDepartment(String department);
     List<FacultyDTO> getFacultyByRole(String role);
+    List<FacultyDTO> searchFaculty(String query);
 }

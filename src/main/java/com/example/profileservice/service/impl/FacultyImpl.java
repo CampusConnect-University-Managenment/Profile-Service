@@ -99,6 +99,14 @@ public class FacultyImpl implements FacultyService {
     }
 
     @Override
+    public List<FacultyDTO> searchFaculty(String query) {
+        List<Faculty> matched = facultyRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFacultyCodeContainingIgnoreCase(
+                query, query, query, query
+        );
+        return matched.stream().map(this::convertToDTO).toList();
+    }
+
+    @Override
     public void deleteFaculty(String facultyCode) {
         facultyRepository.deleteByFacultyCode(facultyCode);
     }
