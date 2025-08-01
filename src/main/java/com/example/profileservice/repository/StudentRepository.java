@@ -9,7 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends MongoRepository<StudentEntity,String> {
+    long count();
+
     Optional<List<StudentEntity>> findByStudentDepartment(String studentDepartment);
+    Optional<List<StudentEntity>> findByStudentYear(String studentYear);
     Optional<StudentEntity> findByStudentRollNo(String studentRollNo);
     Optional<StudentEntity> findTopByStudentDepartmentOrderByStudentRollNoDesc(String studentDepartment);
 }

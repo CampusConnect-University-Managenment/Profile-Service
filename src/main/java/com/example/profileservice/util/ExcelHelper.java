@@ -29,7 +29,6 @@ public class ExcelHelper {
                 }
 
                 StudentEntity student = new StudentEntity();
-
                 try {
                     student.setStudentFirstname(getCellValue(currentRow.getCell(0)));
                     student.setStudentLastname(getCellValue(currentRow.getCell(1)));
@@ -39,11 +38,9 @@ public class ExcelHelper {
                     student.setStudentPhoneNo(getCellValue(currentRow.getCell(5)));
                     student.setStudentEmail(getCellValue(currentRow.getCell(6)));
                     student.setStudentAadharno(getCellValue(currentRow.getCell(7)));
-
-                    student.setStudentTenthmark(parseFloatSafely(currentRow.getCell(8)));
-                    student.setStudentDiplomamark(parseFloatSafely(currentRow.getCell(9)));
-                    student.setStudentTwelfthmark(parseFloatSafely(currentRow.getCell(10)));
-
+                    student.setStudentTenthmark((float) parseDouble(currentRow.getCell(8)));
+                    student.setStudentTwelfthmark((float) parseDouble(currentRow.getCell(9)));
+                    student.setStudentDiplomamark((float) parseDouble(currentRow.getCell(10)));
                     student.setStudentYear(getCellValue(currentRow.getCell(11)));
                     student.setStudentSem(getCellValue(currentRow.getCell(12)));
                     student.setStudentModeofjoing(getCellValue(currentRow.getCell(13)));
@@ -54,19 +51,19 @@ public class ExcelHelper {
                     student.setStudentParentorguardianname(getCellValue(currentRow.getCell(18)));
                     student.setStudentParentorguardianphone(getCellValue(currentRow.getCell(19)));
                     student.setStudentSection(getCellValue(currentRow.getCell(20)));
-                    student.setStudentCredits(parseIntSafely(currentRow.getCell(21)));
-                    student.setStudentAttendance(parseFloatSafely(currentRow.getCell(22)));
-                    student.setStudentCgpa(parseFloatSafely(currentRow.getCell(23)));
+                    student.setStudentCredits((int) parseDouble(currentRow.getCell(21)));
+                    student.setStudentAttendance((float) parseDouble(currentRow.getCell(22)));
+                    student.setStudentCgpa((float) parseDouble(currentRow.getCell(23)));
                     student.setStudentProfilepic(getCellValue(currentRow.getCell(24)));
 
                     studentList.add(student);
                 } catch (Exception e) {
-                    // Log and skip the row
                     System.err.println("Skipping row due to error: " + e.getMessage());
                 }
             }
+
         } catch (IOException e) {
-            throw new RuntimeException("Failed to parse Excel file: " + e.getMessage());
+            throw new RuntimeException("Failed to parse Excel: " + e.getMessage());
         }
 
         return studentList;
@@ -75,35 +72,24 @@ public class ExcelHelper {
     private static String getCellValue(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue().trim();
+            case STRING: return cell.getStringCellValue().trim();
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
                     return new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
                 }
                 return String.valueOf(cell.getNumericCellValue());
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            default:
-                return "";
+            case BOOLEAN: return String.valueOf(cell.getBooleanCellValue());
+            default: return "";
         }
     }
 
-    private static float parseFloatSafely(Cell cell) {
+    private static double parseDouble(Cell cell) {
         try {
-            return Float.parseFloat(getCellValue(cell));
+            return Double.parseDouble(getCellValue(cell));
         } catch (Exception e) {
-            return 0f;
+            return 0.0;
         }
     }
 
-    private static int parseIntSafely(Cell cell) {
-        try {
-            return Integer.parseInt(getCellValue(cell));
-        } catch (Exception e) {
-            return 0;
-        }
-    }
 }
+

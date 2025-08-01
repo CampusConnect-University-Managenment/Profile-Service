@@ -21,6 +21,11 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository = studentRepository;
     }
     @Override
+    public long getTotalStudentCount() {
+        return studentRepository.count();
+    }
+
+    @Override
     public List<StudentEntity> GetallStudents() {
         return studentRepository.findAll();
     }
@@ -38,6 +43,15 @@ public class StudentServiceImpl implements StudentService {
         Optional<List<StudentEntity>> request = studentRepository.findByStudentDepartment(studentDepartment);
         if (request.isEmpty()) {
             throw new StudentNotFoundException("Students Not Found in this Department: " + studentDepartment);
+        }
+        return request.get();
+    }
+
+    @Override
+    public List<StudentEntity> GetStudentByYear(String studentYear) {
+        Optional<List<StudentEntity>> request = studentRepository.findByStudentYear(studentYear);
+        if (request.isEmpty()) {
+            throw new StudentNotFoundException("Students Not Found in this Year: " + studentYear);
         }
         return request.get();
     }
