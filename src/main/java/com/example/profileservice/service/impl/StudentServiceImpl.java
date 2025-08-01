@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.exception.StudentNotFoundException;
 import com.example.profileservice.repository.StudentRepository;
-import com.example.profileservice.repository.StudentSummary;
 import com.example.profileservice.service.StudentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
