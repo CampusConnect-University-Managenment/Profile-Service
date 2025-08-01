@@ -40,7 +40,7 @@ public class StudentController {
         String staticPassword = "Student@123";
 
         // Step 4: Send the credentials to personal email
-        emailService.sendStudentCredentials(personalEmail, officialEmail, staticPassword);
+        emailService. sendStudentCredentials(personalEmail, officialEmail, staticPassword);
 
         commonResponse.setData(savedStudent);
         commonResponse.setMessage("New Student Added Successfully and Email Sent");

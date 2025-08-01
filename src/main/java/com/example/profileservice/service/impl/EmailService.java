@@ -24,18 +24,18 @@ public class EmailService {
         sendEmail(personalEmail, subject, body);
     }
 
-//    public void sendFacultyCredentials(String personalEmail, String facultyCode, String password) {
-//        String officialEmail = facultyCode + UNIVERSITY_DOMAIN;
-//
-//        String subject = "Your Faculty Login Credentials";
-//        String body = String.format(
-//                "Dear Faculty Member,\n\nWelcome to the university faculty portal!\n\nYour login credentials are as follows:\n" +
-//                        "Official Email: %s\nPassword: %s\nPlease use these credentials to access the portal and make sure to update your password after logging in.\n\nBest Regards,\nUniversity Admin",
-//                officialEmail, password
-//        );
-//
-//        sendEmail(personalEmail, subject, body);
-//    }
+    public void sendFacultyCredentials(String personalEmail, String facultyCode, String password) {
+        String officialEmail = facultyCode + UNIVERSITY_DOMAIN;
+
+        String subject = "Your Faculty Login Credentials";
+        String body = String.format(
+                "Dear Faculty,\n\nWelcome to our university!\n\nHere are your login credentials:\n" +
+                        "Official Email: %s\nPassword: %s\n\nPlease use these credentials to log in to the faculty portal.\n\nRegards,\nUniversity Admin",
+                officialEmail, password
+        );
+
+        sendEmail(personalEmail, subject, body);
+    }
 
     private void sendEmail(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
