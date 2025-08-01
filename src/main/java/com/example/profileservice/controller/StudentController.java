@@ -1,10 +1,10 @@
 package com.example.profileservice.controller;
 
 import com.example.profileservice.entity.StudentEntity;
-import com.example.profileservice.repository.StudentSummary;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
+import com.example.profileservice.service.impl.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,27 +19,42 @@ import java.util.Optional;
 public class StudentController {
 
     @Autowired
+    private EmailService emailService;
+    @Autowired
     private StudentService studentService;
 
     @PostMapping("/add")
     public ResponseEntity<CommonResponse> AddStudents(@RequestBody StudentEntity addStudent) {
-        StudentEntity savedStudent = studentService.AddStudents(addStudent);
-        CommonResponse commonResponse = new CommonResponse();
+    StudentEntity savedStudent = studentService.AddStudents(addStudent);
+    CommonResponse commonResponse = new CommonResponse();
 
-        if (savedStudent != null) {
-            commonResponse.setData(savedStudent);
-            commonResponse.setMessage("New Student Added Successfully");
-            commonResponse.setStatusCode(201);
-            commonResponse.setStatus(ResponseStatus.SUCCESS);
-            return ResponseEntity.status(201).body(commonResponse);
-        } else {
-            commonResponse.setStatusCode(400);
-            commonResponse.setMessage("Failed to Add New Student");
-            commonResponse.setData(null);
-            commonResponse.setStatus(ResponseStatus.FAILED);
-            return ResponseEntity.status(400).body(commonResponse);
-        }
+    if (savedStudent != null) {
+        // Step 1: Get personal email from JSON
+        String personalEmail = addStudent.getStudentEmail();
+
+        // Step 2: Generate official mail ID using roll number
+        String rollNo = savedStudent.getStudentRollNo();
+        String officialEmail = rollNo + "@university.edu";
+
+        // Step 3: Use a static password (or you can randomize if needed)
+        String staticPassword = "Student@123";
+
+        // Step 4: Send the credentials to personal email
+        emailService.sendStudentCredentials(personalEmail, officialEmail, staticPassword);
+
+        commonResponse.setData(savedStudent);
+        commonResponse.setMessage("New Student Added Successfully and Email Sent");
+        commonResponse.setStatusCode(201);
+        commonResponse.setStatus(ResponseStatus.SUCCESS);
+        return ResponseEntity.status(201).body(commonResponse);
+    } else {
+        commonResponse.setStatusCode(400);
+        commonResponse.setMessage("Failed to Add New Student");
+        commonResponse.setData(null);
+        commonResponse.setStatus(ResponseStatus.FAILED);
+        return ResponseEntity.status(400).body(commonResponse);
     }
+}
 
     @GetMapping("/all")
     public ResponseEntity<CommonResponse> GetallStudents() {

@@ -39,6 +39,11 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getFacultyByRole(role));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<FacultyDTO>> searchFaculty(@RequestParam("query") String query) {
+        return ResponseEntity.ok(facultyService.searchFaculty(query));
+    }
+
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<FacultyDTO>> getAllFaculty() {
         return ResponseEntity.ok(facultyService.getAllFaculty());
