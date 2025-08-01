@@ -116,6 +116,40 @@ public class StudentController {
         }
     }
 
+    @GetMapping("/totalcount")
+    public ResponseEntity<CommonResponse> getTotalStudentCount() {
+        CommonResponse response = new CommonResponse();
+        long count = studentService.getTotalStudentCount();
+
+        response.setStatusCode(200);
+        response.setStatus(ResponseStatus.valueOf("SUCCESS"));
+        response.setMessage("Total student count fetched successfully");
+        response.setData(count);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/year/{studentYear}")
+    public ResponseEntity<CommonResponse> GetStudentByYear(@PathVariable String studentYear) {
+        CommonResponse commonResponse = new CommonResponse();
+        List<StudentEntity> getStudents = studentService.GetStudentByYear(studentYear);
+
+        if (!getStudents.isEmpty()) {
+            commonResponse.setData(getStudents);
+            commonResponse.setMessage("Student list by Year displayed Successfully");
+            commonResponse.setStatusCode(200);
+            commonResponse.setStatus(ResponseStatus.SUCCESS);
+            return ResponseEntity.status(200).body(commonResponse);
+        } else {
+            commonResponse.setStatusCode(404);
+            commonResponse.setMessage("No student list found for Year: " + studentYear);
+            commonResponse.setData(null);
+            commonResponse.setStatus(ResponseStatus.FAILED);
+            return ResponseEntity.status(404).body(commonResponse);
+        }
+    }
+
     @PutMapping("/rollno/{studentRollNo}")
     public ResponseEntity<CommonResponse> UpdateStudent(@PathVariable String studentRollNo, @RequestBody StudentEntity updateStudent) {
         CommonResponse commonResponse = new CommonResponse();
