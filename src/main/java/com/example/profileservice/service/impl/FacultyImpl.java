@@ -37,6 +37,9 @@ public class FacultyImpl implements FacultyService {
     @Autowired
     private SequenceGeneratorService sequenceGeneratorService;
 
+    @Autowired
+    private EmailService emailService;
+
     private FacultyDTO convertToDTO(Faculty faculty) {
         FacultyDTO dto = new FacultyDTO();
         BeanUtils.copyProperties(faculty, dto);
@@ -53,11 +56,20 @@ public class FacultyImpl implements FacultyService {
     public FacultyDTO createFaculty(FacultyDTO dto) {
         Faculty faculty = convertToEntity(dto);
         long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-        faculty.setFacultyCode("CS" + String.format("%03d", nextSeq)); // CS001, CS002
+        faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
 
         Faculty saved = facultyRepository.save(faculty);
+
+        // Send email after saving
+        emailService.sendFacultyCredentials(
+                faculty.getEmail(),  // assuming this is personal email
+                faculty.getFacultyCode(),  // or official email if different
+                "academix123" // You can also generate a random password and store it
+        );
+
         return convertToDTO(saved);
     }
+
 
     @Override
     public FacultyDTO getFacultyById(String facultyCode) {
@@ -136,7 +148,7 @@ public class FacultyImpl implements FacultyService {
             Sheet sheet = workbook.getSheetAt(0);
             DataFormatter formatter = new DataFormatter(); // Safe conversion
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // start at 1 (skip header)
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Skip header row
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
@@ -148,11 +160,11 @@ public class FacultyImpl implements FacultyService {
                 faculty.setGender(formatter.formatCellValue(row.getCell(4)));
                 faculty.setAddress(formatter.formatCellValue(row.getCell(5)));
 
-                // ✅ DOB & joiningDate: parse if not empty
+                // DOB
                 String dobStr = formatter.formatCellValue(row.getCell(6));
                 if (!dobStr.isEmpty()) {
-                    DateTimeFormatter formater = DateTimeFormatter.ofPattern("M/d/yy");
-                    faculty.setDob(LocalDate.parse(dobStr, formater));
+                    DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("M/d/yy");
+                    faculty.setDob(LocalDate.parse(dobStr, formatterDate));
                 }
 
                 faculty.setBloodGroup(formatter.formatCellValue(row.getCell(7)));
@@ -160,32 +172,40 @@ public class FacultyImpl implements FacultyService {
                 String expStr = formatter.formatCellValue(row.getCell(8));
                 faculty.setExperience(expStr.isEmpty() ? 0 : Integer.parseInt(expStr));
 
+                // Joining Date
                 String joiningDateStr = formatter.formatCellValue(row.getCell(9));
                 if (!joiningDateStr.isEmpty()) {
-                    DateTimeFormatter formater = DateTimeFormatter.ofPattern("M/d/yy");
-                    faculty.setJoiningDate(LocalDate.parse(joiningDateStr, formater));
+                    DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("M/d/yy");
+                    faculty.setJoiningDate(LocalDate.parse(joiningDateStr, formatterDate));
                 }
 
-                // ✅ Fixed here: use setDegree not setEducationQualification
                 faculty.setDegree(formatter.formatCellValue(row.getCell(10)));
-
                 faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
                 faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
 
-                // ✅ courseIds: assume comma-separated string
+                // Course IDs
                 String coursesStr = formatter.formatCellValue(row.getCell(13));
                 if (!coursesStr.isEmpty()) {
                     faculty.setCourseIds(Arrays.asList(coursesStr.split(",")));
                 }
 
-                facultyRepository.save(faculty); // facultyCode auto-generated
+                Faculty savedFaculty = facultyRepository.save(faculty);
+
+                // ✅ Send email after saving
+                String defaultPassword = "academix123"; // You can improve this or generate randomly
+                emailService.sendFacultyCredentials(
+                        savedFaculty.getEmail(),  // official email
+                        faculty.getFacultyCode(), // personal email (change if needed)
+                        defaultPassword
+                );
             }
 
         } catch (Exception e) {
             throw new RuntimeException("Bulk upload failed: " + e.getMessage(), e);
         }
     }
+
 }
