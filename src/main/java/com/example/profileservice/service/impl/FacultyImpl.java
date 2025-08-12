@@ -157,7 +157,7 @@ public class FacultyImpl implements FacultyService {
         return facultyRepository.count();
     }
 
-    @Override
+   @Override
     public void bulkUploadFaculty(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
