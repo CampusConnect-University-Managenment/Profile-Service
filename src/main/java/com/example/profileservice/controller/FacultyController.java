@@ -34,10 +34,10 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getFacultyByDepartment(department));
     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<FacultyDTO>> getFacultyByRole(@PathVariable String role) {
-        return ResponseEntity.ok(facultyService.getFacultyByRole(role));
-    }
+//    @GetMapping("/role/{role}")
+//    public ResponseEntity<List<FacultyDTO>> getFacultyByRole(@PathVariable String role) {
+//        return ResponseEntity.ok(facultyService.getFacultyByRole(role));
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<List<FacultyDTO>> searchFaculty(@RequestParam("query") String query) {

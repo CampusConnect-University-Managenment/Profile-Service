@@ -1,10 +1,10 @@
 package com.example.profileservice.service.impl;
-
+import com.example.profileservice.dto.AuthUserRequest;
 import java.util.List;
 import java.util.Optional;
-
 import com.example.profileservice.entity.StudentEntity;
 import com.example.profileservice.exception.StudentNotFoundException;
+import com.example.profileservice.feign.AuthServiceClient;
 import com.example.profileservice.repository.StudentRepository;
 import com.example.profileservice.service.StudentService;
 import org.springframework.beans.BeanUtils;
@@ -75,10 +75,11 @@ public class StudentServiceImpl implements StudentService {
         System.out.println("Updated student: " + existingStudent.getStudentFirstname() + " " + existingStudent.getStudentLastname());
         return studentRepository.save(existingStudent);
     }
+    @Autowired
+    private AuthServiceClient authServiceClient;
 
     @Override
     public StudentEntity AddStudents(StudentEntity student) {
-
         String department = student.getStudentDepartment().toUpperCase();
 
         Optional<StudentEntity> lastStudentOpt =
@@ -87,17 +88,29 @@ public class StudentServiceImpl implements StudentService {
         int nextNumber = 1;
         if (lastStudentOpt.isPresent()) {
             String lastRollNo = lastStudentOpt.get().getStudentRollNo();
-            String numberPart = lastRollNo.replaceAll("\\D+", ""); // Extract digits
+            String numberPart = lastRollNo.replaceAll("\\D+", "");
             if (!numberPart.isEmpty()) {
                 nextNumber = Integer.parseInt(numberPart) + 1;
             }
         }
 
-        String newRollNo = department + String.format("%03d", nextNumber); // e.g., IT007
+        String newRollNo = department + String.format("%03d", nextNumber);
         student.setStudentRollNo(newRollNo);
 
-        return studentRepository.save(student);
+        StudentEntity saved = studentRepository.save(student);
+
+        // Prepare official credentials
+        String officialEmail = newRollNo + "@university.edu";
+        String password = "Student@123";
+
+        // Call Auth Service (Feign Client)
+        authServiceClient.registerStudent(
+                new AuthUserRequest(saved.getStudentRollNo(), officialEmail, password)
+        );
+
+        return saved;
     }
+
 
     @Override
     public StudentEntity DeleteById(String studentId) {

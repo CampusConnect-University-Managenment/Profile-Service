@@ -164,7 +164,7 @@ public class StudentController {
             return ResponseEntity.status(200).body(commonResponse);
         } else {
             commonResponse.setStatusCode(400);
-            commonResponse.setMessage("Student Update Failed");
+
             commonResponse.setData(null);
             commonResponse.setStatus(ResponseStatus.FAILED);
             return ResponseEntity.status(400).body(commonResponse);

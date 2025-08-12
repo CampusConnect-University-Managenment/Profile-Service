@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class FacultyImpl implements FacultyService {
+public class  FacultyImpl implements FacultyService {
 
     @Autowired
     private FacultyRepository facultyRepository;
@@ -56,7 +56,7 @@ public class FacultyImpl implements FacultyService {
     public FacultyDTO createFaculty(FacultyDTO dto) {
         Faculty faculty = convertToEntity(dto);
         long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-        faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+        faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
         Faculty saved = facultyRepository.save(faculty);
 
@@ -102,13 +102,13 @@ public class FacultyImpl implements FacultyService {
                 .toList();
     }
 
-    @Override
-    public List<FacultyDTO> getFacultyByRole(String role) {
-        List<Faculty> facultyList = facultyRepository.findByRole(role);
-        return facultyList.stream()
-                .map(this::convertToDTO)
-                .toList();
-    }
+//    @Override
+//    public List<FacultyDTO> getFacultyByRole(String role) {
+//        List<Faculty> facultyList = facultyRepository.findByRole(role);
+//        return facultyList.stream()
+//                .map(this::convertToDTO)
+//                .toList();
+//    }
 
     @Override
     public List<FacultyDTO> searchFaculty(String query) {
@@ -184,7 +184,7 @@ public class FacultyImpl implements FacultyService {
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-                faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+                faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
                 // Course IDs
                 String coursesStr = formatter.formatCellValue(row.getCell(13));
