@@ -142,7 +142,7 @@ public class FacultyImpl implements FacultyService {
         return facultyRepository.count();
     }
 
-    @Override
+   @Override
     public void bulkUploadFaculty(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -180,7 +180,7 @@ public class FacultyImpl implements FacultyService {
                 }
 
                 faculty.setDegree(formatter.formatCellValue(row.getCell(10)));
-                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
+//                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
@@ -191,6 +191,9 @@ public class FacultyImpl implements FacultyService {
                 if (!coursesStr.isEmpty()) {
                     faculty.setCourseIds(Arrays.asList(coursesStr.split(",")));
                 }
+
+                faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
+                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
 
                 Faculty savedFaculty = facultyRepository.save(faculty);
 
