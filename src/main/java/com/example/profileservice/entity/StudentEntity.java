@@ -25,7 +25,7 @@ public class StudentEntity {
     private String studentAadharno;
     private float studentTenthmark;
     private float studentDiplomamark;
-    private float studentTwelfthmark;
+    private float studentTwelthmark;
     private String studentYear;
     private String studentSem;
     private String studentModeofjoing;
