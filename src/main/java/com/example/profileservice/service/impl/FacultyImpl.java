@@ -32,6 +32,9 @@ public class  FacultyImpl implements FacultyService {
     private FacultyRepository facultyRepository;
 
     @Autowired
+    private CloudinaryService cloudinaryService;
+
+    @Autowired
     private MongoTemplate mongoTemplate;
 
     @Autowired
@@ -52,23 +55,35 @@ public class  FacultyImpl implements FacultyService {
         return faculty;
     }
 
+
+
     @Override
-    public FacultyDTO createFaculty(FacultyDTO dto) {
+    public FacultyDTO createFaculty(FacultyDTO dto, MultipartFile photoFile) {
         Faculty faculty = convertToEntity(dto);
         long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
         faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
+        // Upload photo and set URL
+        if (photoFile != null && !photoFile.isEmpty()) {
+            String photoUrl = cloudinaryService.uploadImage(photoFile);
+            faculty.setPhotoUrl(photoUrl);
+        }
+
+        // Override email to university email
+        faculty.setEmail(faculty.getFacultyCode().toLowerCase() + "@university.edu");
+
         Faculty saved = facultyRepository.save(faculty);
 
-        // Send email after saving
+        // Send login credentials
         emailService.sendFacultyCredentials(
-                faculty.getEmail(),  // assuming this is personal email
-                faculty.getFacultyCode(),  // or official email if different
-                "academix123" // You can also generate a random password and store it
+                saved.getEmail(),
+                saved.getFacultyCode(),
+                "academix123"
         );
 
         return convertToDTO(saved);
     }
+
 
 
     @Override
@@ -193,8 +208,7 @@ public class  FacultyImpl implements FacultyService {
                 }
 
                 faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
-
-//                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
+                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
 
 
                 Faculty savedFaculty = facultyRepository.save(faculty);
