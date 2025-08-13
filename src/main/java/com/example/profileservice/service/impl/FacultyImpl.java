@@ -26,10 +26,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class FacultyImpl implements FacultyService {
+public class  FacultyImpl implements FacultyService {
 
     @Autowired
     private FacultyRepository facultyRepository;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -52,23 +55,35 @@ public class FacultyImpl implements FacultyService {
         return faculty;
     }
 
+
+
     @Override
-    public FacultyDTO createFaculty(FacultyDTO dto) {
+    public FacultyDTO createFaculty(FacultyDTO dto, MultipartFile photoFile) {
         Faculty faculty = convertToEntity(dto);
         long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-        faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+        faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
+
+        // Upload photo and set URL
+        if (photoFile != null && !photoFile.isEmpty()) {
+            String photoUrl = cloudinaryService.uploadImage(photoFile);
+            faculty.setPhotoUrl(photoUrl);
+        }
+
+        // Override email to university email
+        faculty.setEmail(faculty.getFacultyCode().toLowerCase() + "@university.edu");
 
         Faculty saved = facultyRepository.save(faculty);
 
-        // Send email after saving
+        // Send login credentials
         emailService.sendFacultyCredentials(
-                faculty.getEmail(),  // assuming this is personal email
-                faculty.getFacultyCode(),  // or official email if different
-                "academix123" // You can also generate a random password and store it
+                saved.getEmail(),
+                saved.getFacultyCode(),
+                "academix123"
         );
 
         return convertToDTO(saved);
     }
+
 
 
     @Override
@@ -102,13 +117,13 @@ public class FacultyImpl implements FacultyService {
                 .toList();
     }
 
-    @Override
-    public List<FacultyDTO> getFacultyByRole(String role) {
-        List<Faculty> facultyList = facultyRepository.findByRole(role);
-        return facultyList.stream()
-                .map(this::convertToDTO)
-                .toList();
-    }
+//    @Override
+//    public List<FacultyDTO> getFacultyByRole(String role) {
+//        List<Faculty> facultyList = facultyRepository.findByRole(role);
+//        return facultyList.stream()
+//                .map(this::convertToDTO)
+//                .toList();
+//    }
 
     @Override
     public List<FacultyDTO> searchFaculty(String query) {
@@ -142,7 +157,7 @@ public class FacultyImpl implements FacultyService {
         return facultyRepository.count();
     }
 
-    @Override
+   @Override
     public void bulkUploadFaculty(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -180,17 +195,21 @@ public class FacultyImpl implements FacultyService {
                 }
 
                 faculty.setDegree(formatter.formatCellValue(row.getCell(10)));
-                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
+//                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-                faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+                faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
                 // Course IDs
                 String coursesStr = formatter.formatCellValue(row.getCell(13));
                 if (!coursesStr.isEmpty()) {
                     faculty.setCourseIds(Arrays.asList(coursesStr.split(",")));
                 }
+
+                faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
+                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
+
 
                 Faculty savedFaculty = facultyRepository.save(faculty);
 

@@ -35,6 +35,13 @@
       <artifactId>poi-ooxml</artifactId>
       <version>5.4.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-http44</artifactId>
+      <version>1.29.0</version>
+    </dependency>
+
     <dependency>
       <groupId>org.example</groupId>
       <artifactId>common-dtos</artifactId>
@@ -62,7 +69,8 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <version>1.18.30</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Devtools for live reload -->
@@ -82,6 +90,15 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>profileservice</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

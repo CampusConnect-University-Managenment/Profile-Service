@@ -18,10 +18,12 @@ public class FacultyController {
     @Autowired
     private FacultyService facultyService;
 
-    @PostMapping(produces = "application/json", consumes = "application/json")
-    public ResponseEntity<FacultyDTO> createFaculty(@RequestBody FacultyDTO dto) {
-        System.out.println("DEBUG: FacultyDTO runtime class = " + dto.getClass().getName());
-        return ResponseEntity.ok(facultyService.createFaculty(dto));
+    @PostMapping(consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<FacultyDTO> createFaculty(
+            @RequestPart("faculty") FacultyDTO dto,
+            @RequestPart("photo") MultipartFile photo) {
+
+        return ResponseEntity.ok(facultyService.createFaculty(dto, photo));
     }
 
     @GetMapping("/{facultyCode}")
@@ -34,10 +36,10 @@ public class FacultyController {
         return ResponseEntity.ok(facultyService.getFacultyByDepartment(department));
     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<List<FacultyDTO>> getFacultyByRole(@PathVariable String role) {
-        return ResponseEntity.ok(facultyService.getFacultyByRole(role));
-    }
+//    @GetMapping("/role/{role}")
+//    public ResponseEntity<List<FacultyDTO>> getFacultyByRole(@PathVariable String role) {
+//        return ResponseEntity.ok(facultyService.getFacultyByRole(role));
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<List<FacultyDTO>> searchFaculty(@RequestParam("query") String query) {

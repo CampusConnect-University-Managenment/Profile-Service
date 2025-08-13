@@ -24,7 +24,7 @@ public class Faculty {
 
     private String departmentId;
     private String department; // human-readable
-    private String role;
+    //private String role;
 
     private String gender;
     private String address;
@@ -63,8 +63,8 @@ public class Faculty {
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+//    public String getRole() { return role; }
+//    public void setRole(String role) { this.role = role; }
 
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }

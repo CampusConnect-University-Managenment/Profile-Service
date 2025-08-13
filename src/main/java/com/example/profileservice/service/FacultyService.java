@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
 public interface FacultyService {
-    FacultyDTO createFaculty(FacultyDTO dto);
+//    FacultyDTO createFaculty(FacultyDTO dto);
     FacultyDTO getFacultyById(String id);
     List<FacultyDTO> getAllFaculty();
     FacultyDTO updateFaculty(String id, FacultyDTO dto);
@@ -15,6 +15,9 @@ public interface FacultyService {
     void bulkUploadFaculty(MultipartFile file);
     void deleteFaculty(String id);
     List<FacultyDTO> getFacultyByDepartment(String department);
-    List<FacultyDTO> getFacultyByRole(String role);
+    // List<FacultyDTO> getFacultyByRole(String role);
     List<FacultyDTO> searchFaculty(String query);
+    FacultyDTO createFaculty(FacultyDTO dto, MultipartFile photoFile);
+
+
 }

@@ -35,5 +35,10 @@ public class AdminProfileService {
 
         return repository.save(admin); // Save to DB
     }
-
+    // NEW: Update photo URL
+    public AdminProfile updatePhotoUrl(String adminCode, String photoUrl) {
+        AdminProfile admin = getAdminByCode(adminCode);
+        admin.setPhotoUrl(photoUrl);
+        return repository.save(admin);
+    }
 }

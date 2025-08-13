@@ -44,4 +44,13 @@ public class AdminProfileController {
         AdminProfile updated = service.updatePassword(adminCode, newPassword);
         return ResponseEntity.ok(updated);
     }
+
+    // NEW: Update photo URL
+    @PutMapping("/{adminCode}/update-photo")
+    public ResponseEntity<AdminProfile> updatePhotoUrl(@PathVariable String adminCode,
+                                                       @RequestBody Map<String, String> request) {
+        String photoUrl = request.get("photoUrl");
+        return ResponseEntity.ok(service.updatePhotoUrl(adminCode, photoUrl));
+    }
+
 }
