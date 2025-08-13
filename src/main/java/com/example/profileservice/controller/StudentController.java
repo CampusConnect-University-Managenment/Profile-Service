@@ -32,17 +32,13 @@ public class StudentController {
     CommonResponse commonResponse = new CommonResponse();
 
     if (savedStudent != null) {
-        // Step 1: Get personal email from JSON
         String personalEmail = addStudent.getStudentEmail();
 
-        // Step 2: Generate official mail ID using roll number
         String rollNo = savedStudent.getStudentRollNo();
         String officialEmail = rollNo + "@university.edu";
 
-        // Step 3: Use a static password (or you can randomize if needed)
         String staticPassword = "Student@123";
 
-        // Step 4: Send the credentials to personal email
         emailService. sendStudentCredentials(personalEmail, officialEmail, staticPassword);
 
         commonResponse.setData(savedStudent);
