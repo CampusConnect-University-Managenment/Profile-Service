@@ -10,7 +10,7 @@ public interface FacultyRepository extends MongoRepository<Faculty, String> {
     Optional<Faculty> findByFacultyCode(String facultyCode);
     void deleteByFacultyCode(String facultyCode);
     List<Faculty> findByDepartment(String department);
-    List<Faculty> findByRole(String role);
+   // List<Faculty> findByRole(String role);
 
     List<Faculty> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFacultyCodeContainingIgnoreCase(
             String firstName, String lastName, String email, String facultyCode

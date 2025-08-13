@@ -23,6 +23,8 @@ public class AdminProfile {
     private String email;
 //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    private String photoUrl;
+
 
 
 
@@ -122,4 +124,6 @@ public class AdminProfile {
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 }
