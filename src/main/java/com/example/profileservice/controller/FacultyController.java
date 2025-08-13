@@ -3,16 +3,16 @@ package com.example.profileservice.controller;
 import com.example.profileservice.dto.FacultyDTO;
 import com.example.profileservice.service.FacultyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
-@CrossOrigin (origins= "http://localhost:3000")
+
+@CrossOrigin(origins= "http://localhost:3000")
 @RestController
-@RequestMapping("/api/admin/faculty")
+@RequestMapping("/api/admin/faculty")  // Keep this unchanged
 public class FacultyController {
 
     @Autowired

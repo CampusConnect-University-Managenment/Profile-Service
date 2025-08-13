@@ -20,6 +20,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
+
     @Override
     public long getTotalStudentCount() {
         return studentRepository.count();
@@ -29,13 +30,11 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentEntity> GetallStudents() {
         return studentRepository.findAll();
     }
+
     @Override
     public Optional<StudentEntity> findByStudentRollNo(String studentRollNo) {
-        Optional<StudentEntity> request = studentRepository.findByStudentRollNo(studentRollNo);
-        if (request.isEmpty()) {
-            throw new StudentNotFoundException("Student not found with RollNo: " + studentRollNo);
-        }
-        return request;
+        // Return Optional instead of throwing directly
+        return studentRepository.findByStudentRollNo(studentRollNo);
     }
 
     @Override
@@ -55,6 +54,7 @@ public class StudentServiceImpl implements StudentService {
         }
         return request.get();
     }
+
     @Override
     public List<StudentEntity> saveAllStudents(List<StudentEntity> students) {
         for (StudentEntity student : students) {
@@ -70,6 +70,7 @@ public class StudentServiceImpl implements StudentService {
         if (req.isEmpty()) {
             throw new StudentNotFoundException("Student not found with Roll No: " + studentRollNo);
         }
+
         StudentEntity existingStudent = req.get();
         BeanUtils.copyProperties(updateStudent, existingStudent, "studentId", "studentRollNo");
         System.out.println("Updated student: " + existingStudent.getStudentFirstname() + " " + existingStudent.getStudentLastname());
@@ -78,23 +79,25 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentEntity AddStudents(StudentEntity student) {
+        // Only generate roll number if not provided
+        if (student.getStudentRollNo() == null || student.getStudentRollNo().isBlank()) {
+            String department = student.getStudentDepartment().toUpperCase();
 
-        String department = student.getStudentDepartment().toUpperCase();
+            Optional<StudentEntity> lastStudentOpt =
+                    studentRepository.findTopByStudentDepartmentOrderByStudentRollNoDesc(department);
 
-        Optional<StudentEntity> lastStudentOpt =
-                studentRepository.findTopByStudentDepartmentOrderByStudentRollNoDesc(department);
-
-        int nextNumber = 1;
-        if (lastStudentOpt.isPresent()) {
-            String lastRollNo = lastStudentOpt.get().getStudentRollNo();
-            String numberPart = lastRollNo.replaceAll("\\D+", ""); // Extract digits
-            if (!numberPart.isEmpty()) {
-                nextNumber = Integer.parseInt(numberPart) + 1;
+            int nextNumber = 1;
+            if (lastStudentOpt.isPresent()) {
+                String lastRollNo = lastStudentOpt.get().getStudentRollNo();
+                String numberPart = lastRollNo.replaceAll("\\D+", ""); // Extract digits
+                if (!numberPart.isEmpty()) {
+                    nextNumber = Integer.parseInt(numberPart) + 1;
+                }
             }
-        }
 
-        String newRollNo = department + String.format("%03d", nextNumber); // e.g., IT007
-        student.setStudentRollNo(newRollNo);
+            String newRollNo = department + String.format("%03d", nextNumber); // e.g., IT007
+            student.setStudentRollNo(newRollNo);
+        }
 
         return studentRepository.save(student);
     }

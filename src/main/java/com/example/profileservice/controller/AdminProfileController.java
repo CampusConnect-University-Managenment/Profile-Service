@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/admins")  // Changed here to avoid conflict
 @CrossOrigin(origins = "*") // allow all origins, or restrict to your frontend URL
 public class AdminProfileController {
 
@@ -41,9 +40,8 @@ public class AdminProfileController {
     @PutMapping("/{adminCode}/change-password")
     public ResponseEntity<AdminProfile> changePassword(@PathVariable String adminCode,
                                                        @RequestBody Map<String, String> request) {
-        String newPassword = request.get("password"); // This must match key in Postman
+        String newPassword = request.get("password");
         AdminProfile updated = service.updatePassword(adminCode, newPassword);
         return ResponseEntity.ok(updated);
     }
-
 }
