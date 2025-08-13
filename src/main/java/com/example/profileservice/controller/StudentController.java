@@ -1,6 +1,8 @@
 package com.example.profileservice.controller;
 
 import com.example.profileservice.entity.StudentEntity;
+import com.example.profileservice.feign.AuthServiceClient;
+import com.example.profileservice.repository.StudentRepository;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -186,5 +189,27 @@ public class StudentController {
             commonResponse.setStatus(ResponseStatus.NOT_FOUND);
             return ResponseEntity.status(404).body(commonResponse);
         }
+
     }
+    @Autowired
+    StudentRepository studentRepository;
+    @Autowired
+    AuthServiceClient authServiceClient;
+    @PutMapping("/reset-password/{rollNo}")
+    public ResponseEntity<String> resetPassword(@PathVariable String rollNo,
+                                                @RequestBody Map<String, String> request) {
+        Optional<StudentEntity> studentOpt = studentRepository.findByStudentRollNo(rollNo);
+        if (studentOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
+        }
+
+        String newPassword = request.get("newPassword");
+        String uniqueId = studentOpt.get().getStudentRollNo(); // or any unique ID mapping
+
+        // Call Auth Service
+        authServiceClient.updatePasswordInAuth(uniqueId, request);
+
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
 }

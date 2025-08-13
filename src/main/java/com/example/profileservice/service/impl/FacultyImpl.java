@@ -193,7 +193,9 @@ public class  FacultyImpl implements FacultyService {
                 }
 
                 faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
+
 //                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
+
 
                 Faculty savedFaculty = facultyRepository.save(faculty);
 
