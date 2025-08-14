@@ -23,18 +23,19 @@ public class Faculty {
     private String email;
 
     private String departmentId;
-    private String department; // human-readable
-    //private String role;
+    private String department; // added
+    private String role;       // added
 
     private String gender;
     private String address;
     private LocalDate dob;
+    private int age;           // added
+
     private String bloodGroup;
     private int experience;
-
     private LocalDate joiningDate;
 
-    private String degree;
+    private String degree;     // renamed from educationQualification
     private String photoUrl;
     private String contact;
 
@@ -63,8 +64,8 @@ public class Faculty {
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 
-//    public String getRole() { return role; }
-//    public void setRole(String role) { this.role = role; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
@@ -75,10 +76,8 @@ public class Faculty {
     public LocalDate getDob() { return dob; }
     public void setDob(LocalDate dob) { this.dob = dob; }
 
-    public int getAge() {
-        if (dob == null) return 0;
-        return Period.between(dob, LocalDate.now()).getYears();
-    }
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
 
     public String getBloodGroup() { return bloodGroup; }
     public void setBloodGroup(String bloodGroup) { this.bloodGroup = bloodGroup; }
@@ -86,10 +85,7 @@ public class Faculty {
     public int getExperience() { return experience; }
     public void setExperience(int experience) { this.experience = experience; }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public LocalDate getJoiningDate() { return joiningDate; }
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public void setJoiningDate(LocalDate joiningDate) { this.joiningDate = joiningDate; }
 
     public String getDegree() { return degree; }
