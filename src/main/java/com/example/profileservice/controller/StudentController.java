@@ -1,6 +1,8 @@
 package com.example.profileservice.controller;
 
 import com.example.profileservice.entity.StudentEntity;
+import com.example.profileservice.feign.AuthServiceClient;
+import com.example.profileservice.repository.StudentRepository;
 import com.example.profileservice.response.CommonResponse;
 import com.example.profileservice.service.StudentService;
 import com.example.profileservice.enumeration.ResponseStatus;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,17 +32,13 @@ public class StudentController {
     CommonResponse commonResponse = new CommonResponse();
 
     if (savedStudent != null) {
-        // Step 1: Get personal email from JSON
         String personalEmail = addStudent.getStudentEmail();
 
-        // Step 2: Generate official mail ID using roll number
         String rollNo = savedStudent.getStudentRollNo();
         String officialEmail = rollNo + "@university.edu";
 
-        // Step 3: Use a static password (or you can randomize if needed)
         String staticPassword = "Student@123";
 
-        // Step 4: Send the credentials to personal email
         emailService. sendStudentCredentials(personalEmail, officialEmail, staticPassword);
 
         commonResponse.setData(savedStudent);
@@ -164,7 +163,7 @@ public class StudentController {
             return ResponseEntity.status(200).body(commonResponse);
         } else {
             commonResponse.setStatusCode(400);
-            commonResponse.setMessage("Student Update Failed");
+
             commonResponse.setData(null);
             commonResponse.setStatus(ResponseStatus.FAILED);
             return ResponseEntity.status(400).body(commonResponse);
@@ -190,5 +189,27 @@ public class StudentController {
             commonResponse.setStatus(ResponseStatus.NOT_FOUND);
             return ResponseEntity.status(404).body(commonResponse);
         }
+
     }
+    @Autowired
+    StudentRepository studentRepository;
+    @Autowired
+    AuthServiceClient authServiceClient;
+    @PutMapping("/reset-password/{rollNo}")
+    public ResponseEntity<String> resetPassword(@PathVariable String rollNo,
+                                                @RequestBody Map<String, String> request) {
+        Optional<StudentEntity> studentOpt = studentRepository.findByStudentRollNo(rollNo);
+        if (studentOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
+        }
+
+        String newPassword = request.get("newPassword");
+        String uniqueId = studentOpt.get().getStudentRollNo(); // or any unique ID mapping
+
+        // Call Auth Service
+        authServiceClient.updatePasswordInAuth(uniqueId, request);
+
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
 }

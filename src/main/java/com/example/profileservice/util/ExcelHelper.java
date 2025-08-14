@@ -39,7 +39,7 @@ public class ExcelHelper {
                     student.setStudentEmail(getCellValue(currentRow.getCell(6)));
                     student.setStudentAadharno(getCellValue(currentRow.getCell(7)));
                     student.setStudentTenthmark((float) parseDouble(currentRow.getCell(8)));
-                    student.setStudentTwelfthmark((float) parseDouble(currentRow.getCell(9)));
+                    student.setStudentTwelthmark((float) parseDouble(currentRow.getCell(9)));
                     student.setStudentDiplomamark((float) parseDouble(currentRow.getCell(10)));
                     student.setStudentYear(getCellValue(currentRow.getCell(11)));
                     student.setStudentSem(getCellValue(currentRow.getCell(12)));

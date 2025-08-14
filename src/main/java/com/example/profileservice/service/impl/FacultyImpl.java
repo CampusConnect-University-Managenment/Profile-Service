@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class FacultyImpl implements FacultyService {
+public class  FacultyImpl implements FacultyService {
 
     @Autowired
     private FacultyRepository facultyRepository;
@@ -61,7 +61,7 @@ public class FacultyImpl implements FacultyService {
     public FacultyDTO createFaculty(FacultyDTO dto, MultipartFile photoFile) {
         Faculty faculty = convertToEntity(dto);
         long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-        faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+        faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
         // Upload photo and set URL
         if (photoFile != null && !photoFile.isEmpty()) {
@@ -117,13 +117,13 @@ public class FacultyImpl implements FacultyService {
                 .toList();
     }
 
-    @Override
-    public List<FacultyDTO> getFacultyByRole(String role) {
-        List<Faculty> facultyList = facultyRepository.findByRole(role);
-        return facultyList.stream()
-                .map(this::convertToDTO)
-                .toList();
-    }
+//    @Override
+//    public List<FacultyDTO> getFacultyByRole(String role) {
+//        List<Faculty> facultyList = facultyRepository.findByRole(role);
+//        return facultyList.stream()
+//                .map(this::convertToDTO)
+//                .toList();
+//    }
 
     @Override
     public List<FacultyDTO> searchFaculty(String query) {
@@ -199,7 +199,7 @@ public class FacultyImpl implements FacultyService {
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
-                faculty.setFacultyCode("CS" + String.format("%03d", nextSeq));
+                faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
                 // Course IDs
                 String coursesStr = formatter.formatCellValue(row.getCell(13));
@@ -209,6 +209,7 @@ public class FacultyImpl implements FacultyService {
 
                 faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
                 faculty.setRole(formatter.formatCellValue(row.getCell(15)));
+
 
                 Faculty savedFaculty = facultyRepository.save(faculty);
 

@@ -25,7 +25,7 @@ public class StudentEntity {
     private String studentAadharno;
     private float studentTenthmark;
     private float studentDiplomamark;
-    private float studentTwelfthmark;
+    private float studentTwelthmark;
     private String studentYear;
     private String studentSem;
     private String studentModeofjoing;
@@ -43,5 +43,28 @@ public class StudentEntity {
     private String studentProfilepic;
 
 
-
+    public String getStudentRollNo() {
+        return studentRollNo;
+    }
+public String getStudentEmail(){
+        return studentEmail;
+}
+public String getStudentDepartment(){
+        return studentDepartment;
+}
+public void setStudentRollNo(String studentRollNo){
+        this.studentRollNo=studentRollNo;
+}
+public void setStudentId(String studentId){
+        this.studentId=studentId;
+}
+public String getStudentFirstname(){
+        return studentFirstname;
+}
+public String getStudentLastname(){
+        return studentLastname;
+}
+public String getStudentId(){
+        return studentId;
+}
 }
