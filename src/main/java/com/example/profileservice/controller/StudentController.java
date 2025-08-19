@@ -207,7 +207,7 @@ public class StudentController {
         String uniqueId = studentOpt.get().getStudentRollNo(); // or any unique ID mapping
 
         // Call Auth Service
-        authServiceClient.updatePasswordInAuth(uniqueId, request);
+
 
         return ResponseEntity.ok("Password updated successfully");
     }
