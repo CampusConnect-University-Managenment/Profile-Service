@@ -211,5 +211,32 @@ public class StudentController {
 
         return ResponseEntity.ok("Password updated successfully");
     }
+    @PutMapping("/attendance/{rollNo}")
+    public ResponseEntity<CommonResponse> updateAttendance(
+            @PathVariable String rollNo,
+            @RequestParam float attendancePercentage) {
+
+        CommonResponse commonResponse = new CommonResponse();
+
+        StudentEntity student = studentService.findByStudentRollNo(rollNo)
+                .orElse(null);
+
+        if (student == null) {
+            commonResponse.setStatusCode(404);
+            commonResponse.setMessage("Student not found with RollNo: " + rollNo);
+            commonResponse.setStatus(ResponseStatus.FAILED);
+            return ResponseEntity.status(404).body(commonResponse);
+        }
+
+        student.setStudentAttendance(attendancePercentage);
+        StudentEntity updated = studentService.UpdateStudent(rollNo, student);
+
+        commonResponse.setStatusCode(200);
+        commonResponse.setMessage("Attendance updated successfully");
+        commonResponse.setStatus(ResponseStatus.SUCCESS);
+        commonResponse.setData(updated);
+
+        return ResponseEntity.ok(commonResponse);
+    }
 
 }
