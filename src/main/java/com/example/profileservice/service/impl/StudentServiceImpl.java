@@ -137,7 +137,6 @@ public StudentEntity DeleteById(String studentId) {
     } catch (Exception e) {
         System.err.println("Warning: Failed to delete user in Auth Service for RollNo: " + student.getStudentRollNo());
     }
-
     return student;
 }
 

@@ -11,5 +11,6 @@ public class ProfileserviceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ProfileserviceApplication.class, args);
 		System.out.println("Hello");
+
 	}
 }
