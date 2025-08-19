@@ -1,8 +1,10 @@
 package com.example.profileservice.service.impl;
 
+import com.example.profileservice.dto.AuthUserRequest;
 import com.example.profileservice.dto.FacultyDTO;
 import com.example.profileservice.entity.Faculty;
 import com.example.profileservice.exception.FacultyNotFoundException;
+import com.example.profileservice.feign.AuthServiceClient;
 import com.example.profileservice.repository.FacultyRepository;
 import com.example.profileservice.service.FacultyService;
 import com.example.profileservice.service.SequenceGeneratorService;
@@ -136,19 +138,19 @@ public class  FacultyImpl implements FacultyService {
             throw new FacultyNotFoundException("Faculty not found with code " + facultyCode);
         }
     }
-
+    @Autowired
+    AuthServiceClient authServiceClient;
     @Override
     public long getFacultyCount() {
         return facultyRepository.count();
     }
-
-   @Override
+    @Override
     public void bulkUploadFaculty(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            DataFormatter formatter = new DataFormatter(); // Safe conversion
+            DataFormatter formatter = new DataFormatter();
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Skip header row
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Skip header
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
@@ -160,7 +162,6 @@ public class  FacultyImpl implements FacultyService {
                 faculty.setGender(formatter.formatCellValue(row.getCell(4)));
                 faculty.setAddress(formatter.formatCellValue(row.getCell(5)));
 
-                // DOB
                 String dobStr = formatter.formatCellValue(row.getCell(6));
                 if (!dobStr.isEmpty()) {
                     DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("M/d/yy");
@@ -172,7 +173,6 @@ public class  FacultyImpl implements FacultyService {
                 String expStr = formatter.formatCellValue(row.getCell(8));
                 faculty.setExperience(expStr.isEmpty() ? 0 : Integer.parseInt(expStr));
 
-                // Joining Date
                 String joiningDateStr = formatter.formatCellValue(row.getCell(9));
                 if (!joiningDateStr.isEmpty()) {
                     DateTimeFormatter formatterDate = DateTimeFormatter.ofPattern("M/d/yy");
@@ -180,31 +180,43 @@ public class  FacultyImpl implements FacultyService {
                 }
 
                 faculty.setDegree(formatter.formatCellValue(row.getCell(10)));
-//                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
+
+                // ✅ Store Photo URL
+                faculty.setPhotoUrl(formatter.formatCellValue(row.getCell(11)));
+
                 faculty.setContact(formatter.formatCellValue(row.getCell(12)));
 
                 long nextSeq = sequenceGeneratorService.getNextSequence("faculty_sequence");
                 faculty.setFacultyCode("FAC_CS" + String.format("%03d", nextSeq));
 
-                // Course IDs
                 String coursesStr = formatter.formatCellValue(row.getCell(13));
                 if (!coursesStr.isEmpty()) {
                     faculty.setCourseIds(Arrays.asList(coursesStr.split(",")));
                 }
 
-                faculty.setDepartment(formatter.formatCellValue(row.getCell(14))); // simple string
+                faculty.setDepartment(formatter.formatCellValue(row.getCell(14)));
 
-                faculty.setRole(formatter.formatCellValue(row.getCell(15)));
-
-
+                // Save to MongoDB
                 Faculty savedFaculty = facultyRepository.save(faculty);
 
-                // ✅ Send email after saving
-                String defaultPassword = "academix123"; // You can improve this or generate randomly
+                // Official credentials
+                String officialEmail = savedFaculty.getFacultyCode() + "@university.edu";
+                String defaultPassword = "Faculty@123";
+
+                // Send email
                 emailService.sendFacultyCredentials(
-                        savedFaculty.getEmail(),  // official email
-                        faculty.getFacultyCode(), // personal email (change if needed)
+                        savedFaculty.getEmail(),
+                        officialEmail,
                         defaultPassword
+                );
+
+                // Save to MySQL Auth DB (shared users table)
+                authServiceClient.registerStudent(
+                        new AuthUserRequest(
+                                savedFaculty.getFacultyCode(),
+                                officialEmail,
+                                defaultPassword
+                        )
                 );
             }
 
@@ -212,5 +224,6 @@ public class  FacultyImpl implements FacultyService {
             throw new RuntimeException("Bulk upload failed: " + e.getMessage(), e);
         }
     }
+
 
 }

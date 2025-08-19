@@ -67,4 +67,8 @@ public String getStudentLastname(){
 public String getStudentId(){
         return studentId;
 }
+public float getStudentAttendance(){return studentAttendance;}
+    public void setStudentAttendance(float studentAttendance){
+        this.studentAttendance=studentAttendance;
+    }
 }

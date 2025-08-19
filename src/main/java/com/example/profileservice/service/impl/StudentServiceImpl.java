@@ -112,13 +112,33 @@ public class StudentServiceImpl implements StudentService {
     }
 
 
-    @Override
-    public StudentEntity DeleteById(String studentId) {
-        Optional<StudentEntity> existingRequest = studentRepository.findById(studentId);
-        if (existingRequest.isEmpty()) {
-            throw new StudentNotFoundException("Student not found with this id: " + studentId);
-        }
-        studentRepository.delete(existingRequest.get());
-        return existingRequest.get();
+//    @Override
+//    public StudentEntity DeleteById(String studentId) {
+//        Optional<StudentEntity> existingRequest = studentRepository.findById(studentId);
+//        if (existingRequest.isEmpty()) {
+//            throw new StudentNotFoundException("Student not found with this id: " + studentId);
+//        }
+//        studentRepository.delete(existingRequest.get());
+//        return existingRequest.get();
+//    }
+@Override
+public StudentEntity DeleteById(String studentId) {
+    Optional<StudentEntity> existingRequest = studentRepository.findById(studentId);
+    if (existingRequest.isEmpty()) {
+        throw new StudentNotFoundException("Student not found with this id: " + studentId);
     }
+
+    StudentEntity student = existingRequest.get();
+    studentRepository.delete(student);
+
+    // Also delete in Auth Service
+    try {
+        authServiceClient.deleteUserInAuth(student.getStudentRollNo());
+    } catch (Exception e) {
+        System.err.println("Warning: Failed to delete user in Auth Service for RollNo: " + student.getStudentRollNo());
+    }
+
+    return student;
+}
+
 }
